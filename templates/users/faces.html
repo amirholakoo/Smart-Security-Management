@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}Faces - Security Management System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Registered Faces</h1>
+    <a href="{{ url_for('add_face') }}" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Add Face
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <i class="fas fa-user-tag"></i> Face Database
+    </div>
+    <div class="card-body">
+        {% if faces %}
+        <div class="row">
+            {% for face in faces %}
+            <div class="col-md-4 col-lg-3 mb-4">
+                <div class="card h-100">
+                    <img src="{{ url_for('static', filename='img/faces/' + face.file_path.split('/')[-1]) }}" 
+                         class="card-img-top" alt="Face" style="object-fit: cover; height: 200px;">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ face.user.first_name }} {{ face.user.last_name }}</h5>
+                        <p class="card-text">
+                            <small class="text-muted">Added: {{ face.created_at.strftime('%Y-%m-%d') }}</small>
+                        </p>
+                        <div class="text-center">
+                            <form action="{{ url_for('delete_face', face_id=face.id) }}" method="post">
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this face?')">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i> No faces have been registered yet.
+            Use the "Add Face" button to register faces for access control.
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card mt-4">
+    <div class="card-header">
+        <i class="fas fa-info-circle"></i> About Face Recognition
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <h5>How It Works</h5>
+                <p>The face recognition system works by:</p>
+                <ol>
+                    <li>Capturing images from the security camera</li>
+                    <li>Detecting faces in the captured images</li>
+                    <li>Comparing detected faces with registered faces</li>
+                    <li>Granting access to recognized individuals</li>
+                </ol>
+                <p>Face recognition provides an additional layer of security for pedestrian access control.</p>
+            </div>
+            <div class="col-md-6">
+                <h5>Best Practices</h5>
+                <p>For optimal recognition performance:</p>
+                <ul>
+                    <li>Register multiple face images of each person from different angles</li>
+                    <li>Ensure good lighting conditions in the registration images</li>
+                    <li>Update face images periodically</li>
+                    <li>Avoid wearing accessories that cover facial features during recognition</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

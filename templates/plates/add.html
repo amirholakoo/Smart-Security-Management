@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Vehicle - Security Management System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Add New Vehicle</h1>
+    <a href="{{ url_for('vehicles') }}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Back to Vehicles
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <i class="fas fa-car"></i> Vehicle Registration Form
+    </div>
+    <div class="card-body">
+        <form action="{{ url_for('add_vehicle') }}" method="post" enctype="multipart/form-data">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="license_plate" class="form-label">License Plate Number *</label>
+                        <input type="text" class="form-control" id="license_plate" name="license_plate" required>
+                        <div class="form-text">Enter the exact license plate number</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="make" class="form-label">Make</label>
+                        <input type="text" class="form-control" id="make" name="make">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="model" class="form-label">Model</label>
+                        <input type="text" class="form-control" id="model" name="model">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="color" class="form-label">Color</label>
+                        <input type="text" class="form-control" id="color" name="color">
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    {% if current_user.role == 'admin' %}
+                    <div class="mb-3">
+                        <label for="owner_id" class="form-label">Owner *</label>
+                        <select class="form-select" id="owner_id" name="owner_id" required>
+                            <option value="">Select an owner</option>
+                            {% for user in users %}
+                            <option value="{{ user.id }}">{{ user.first_name }} {{ user.last_name }} ({{ user.username }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="mb-3">
+                        <label for="plate_image" class="form-label">License Plate Image *</label>
+                        <input type="file" class="form-control" id="plate_image" name="plate_image" accept="image/*" required>
+                        <div class="form-text">Upload a clear image of the license plate for recognition</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">Notes</label>
+                        <textarea class="form-control" id="notes" name="notes" rows="5"></textarea>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-4 text-center">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="fas fa-save"></i> Register Vehicle
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    // Preview uploaded image
+    document.getElementById('plate_image').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                // You could add image preview code here if desired
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
+{% endblock %}
+
+{% endblock %}

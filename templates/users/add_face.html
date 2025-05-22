@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Face - Security Management System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Add New Face</h1>
+    <a href="{{ url_for('faces') }}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Back to Faces
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <i class="fas fa-user-plus"></i> Face Registration Form
+    </div>
+    <div class="card-body">
+        <form action="{{ url_for('add_face') }}" method="post" enctype="multipart/form-data">
+            <div class="row">
+                {% if current_user.role == 'admin' %}
+                <div class="col-md-6 mb-3">
+                    <label for="user_id" class="form-label">User *</label>
+                    <select class="form-select" id="user_id" name="user_id" required>
+                        <option value="">Select a user</option>
+                        {% for user in users %}
+                        <option value="{{ user.id }}">{{ user.first_name }} {{ user.last_name }} ({{ user.username }})</option>
+                        {% endfor %}
+                    </select>
+                    <div class="form-text">Select the user this face belongs to</div>
+                </div>
+                {% endif %}
+                
+                <div class="{% if current_user.role == 'admin' %}col-md-6{% else %}col-md-12{% endif %} mb-3">
+                    <label for="face_image" class="form-label">Face Image *</label>
+                    <input type="file" class="form-control" id="face_image" name="face_image" accept="image/*" required>
+                    <div class="form-text">Upload a clear frontal face image</div>
+                </div>
+            </div>
+            
+            <div class="row mt-3">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-camera"></i> Image Preview
+                        </div>
+                        <div class="card-body text-center">
+                            <img id="preview" src="#" alt="Face preview" style="max-width: 100%; max-height: 300px; display: none;">
+                            <p id="no-preview" class="text-muted">Image preview will appear here</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-4 text-center">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="fas fa-save"></i> Register Face
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card mt-4">
+    <div class="card-header">
+        <i class="fas fa-info-circle"></i> Face Image Guidelines
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <h5>Requirements for Good Recognition</h5>
+                <ul>
+                    <li>Clear frontal face image</li>
+                    <li>Good lighting conditions</li>
+                    <li>Neutral facial expression</li>
+                    <li>No heavy makeup that alters facial features</li>
+                    <li>No face coverings (masks, scarves, etc.)</li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <h5>Tips for Better Recognition</h5>
+                <ul>
+                    <li>Register multiple images from slightly different angles</li>
+                    <li>Include images with and without glasses if applicable</li>
+                    <li>Include images with different hairstyles if applicable</li>
+                    <li>Update images periodically as appearance changes</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Show image preview when file is selected
+    document.getElementById('face_image').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const preview = document.getElementById('preview');
+                preview.src = event.target.result;
+                preview.style.display = 'block';
+                document.getElementById('no-preview').style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
+{% endblock %}

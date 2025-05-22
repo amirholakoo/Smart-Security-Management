@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block title %}Vehicles - Security Management System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Registered Vehicles</h1>
+    <a href="{{ url_for('add_vehicle') }}" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Add Vehicle
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <i class="fas fa-car"></i> Vehicle List
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>License Plate</th>
+                        <th>Make/Model</th>
+                        <th>Color</th>
+                        <th>Owner</th>
+                        <th>Status</th>
+                        <th>Images</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for vehicle in vehicles %}
+                    <tr>
+                        <td>{{ vehicle.license_plate }}</td>
+                        <td>{{ vehicle.make }} {{ vehicle.model }}</td>
+                        <td>{{ vehicle.color }}</td>
+                        <td>{{ vehicle.owner.first_name }} {{ vehicle.owner.last_name }}</td>
+                        <td>
+                            {% if vehicle.is_active %}
+                                <span class="badge bg-success">Active</span>
+                            {% else %}
+                                <span class="badge bg-danger">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ url_for('vehicle_plates', vehicle_id=vehicle.id) }}" class="btn btn-sm btn-info">
+                                <i class="fas fa-images"></i> {{ vehicle.plate_images|length }} Images
+                            </a>
+                        </td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <a href="{{ url_for('edit_vehicle', vehicle_id=vehicle.id) }}" class="btn btn-sm btn-warning">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                                <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ vehicle.id }}">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </div>
+                            
+                            <!-- Delete Modal -->
+                            <div class="modal fade" id="deleteModal{{ vehicle.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ vehicle.id }}" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="deleteModalLabel{{ vehicle.id }}">Confirm Deletion</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Are you sure you want to delete the vehicle with license plate <strong>{{ vehicle.license_plate }}</strong>?
+                                            This action cannot be undone.
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                            <form action="{{ url_for('delete_vehicle', vehicle_id=vehicle.id) }}" method="post">
+                                                <button type="submit" class="btn btn-danger">Delete</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center">No vehicles registered yet</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block title %}Camera Feed - Security Management System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Live Camera Feed</h1>
+    <div>
+        <a href="{{ url_for('access_logs') }}" class="btn btn-primary">
+            <i class="fas fa-history"></i> Access Logs
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <i class="fas fa-video"></i> Live Camera
+    </div>
+    <div class="card-body">
+        <div class="camera-container">
+            <img src="{{ url_for('video_feed') }}" alt="Camera Feed" class="camera-feed">
+        </div>
+        
+        {% if current_user.role == 'admin' %}
+        <div class="camera-controls mt-4">
+            <div class="row">
+                <div class="col-md-4 text-center mb-3">
+                    <form action="{{ url_for('test_open_gate') }}" method="post">
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="fas fa-door-open"></i> Open Gate
+                        </button>
+                    </form>
+                </div>
+                <div class="col-md-4 text-center mb-3">
+                    <form action="{{ url_for('test_close_gate') }}" method="post">
+                        <button type="submit" class="btn btn-danger btn-lg">
+                            <i class="fas fa-door-closed"></i> Close Gate
+                        </button>
+                    </form>
+                </div>
+                <div class="col-md-4 text-center mb-3">
+                    <form action="{{ url_for('test_pulse_gate') }}" method="post">
+                        <button type="submit" class="btn btn-warning btn-lg">
+                            <i class="fas fa-bolt"></i> Pulse Gate
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header">
+                <i class="fas fa-car"></i> License Plate Recognition
+            </div>
+            <div class="card-body">
+                <p>The system is continuously monitoring for license plates in the camera view. When a license plate is detected:</p>
+                <ol>
+                    <li>The plate is matched against the database of registered vehicles</li>
+                    <li>If a match is found with sufficient confidence, the gate is automatically opened</li>
+                    <li>All access attempts are logged with images for security review</li>
+                </ol>
+                <p>Current settings:</p>
+                <ul>
+                    <li>Confidence threshold: {{ "%.0f"|format(config.PLATE_CONFIDENCE_THRESHOLD * 100) }}%</li>
+                    <li>Detection interval: {{ config.PLATE_DETECTION_INTERVAL }} second(s)</li>
+                    <li>Gate open duration: {{ config.GATE_OPEN_DURATION }} seconds</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header">
+                <i class="fas fa-user"></i> Face Recognition
+            </div>
+            <div class="card-body">
+                {% if config.FACE_RECOGNITION_ENABLED %}
+                <p>Face recognition is currently <span class="badge bg-success">ENABLED</span></p>
+                <p>The system is monitoring for registered faces in the camera view. When a face is detected:</p>
+                <ol>
+                    <li>The face is matched against the database of registered users</li>
+                    <li>If a match is found with sufficient confidence, access is granted</li>
+                    <li>All access attempts are logged with images for security review</li>
+                </ol>
+                <p>Current settings:</p>
+                <ul>
+                    <li>Confidence threshold: {{ "%.0f"|format(config.FACE_MATCH_THRESHOLD * 100) }}%</li>
+                    <li>Detection interval: {{ config.FACE_DETECTION_INTERVAL }} second(s)</li>
+                </ul>
+                {% else %}
+                <p>Face recognition is currently <span class="badge bg-danger">DISABLED</span></p>
+                <p>To enable face recognition:</p>
+                <ol>
+                    <li>Edit the <code>config.py</code> file</li>
+                    <li>Set <code>FACE_RECOGNITION_ENABLED = True</code></li>
+                    <li>Restart the application</li>
+                </ol>
+                <p>Once enabled, register faces through the Faces menu.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
